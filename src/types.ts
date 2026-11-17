@@ -828,3 +828,23 @@ export interface TradeGeneralSettings {
 
 
 
+export interface DailyOperationReport {
+  date: string; // YYYY-MM-DD
+  newOrders: number;
+  completedOrders: number;
+  activeStaff: number;
+  alarmCount: number;
+  healthAssessments: number;
+  satisfaction: number; // 当日服务好评率，百分比数值，如 99.5
+}
+
+export interface DailyOperationSummary {
+  dayCount: number;
+  totalNewOrders: number;
+  totalCompletedOrders: number;
+  completionRate: number; // 履约率，百分比数值
+  totalAlarms: number;
+  totalHealthAssessments: number;
+  avgSatisfaction: number; // 平均好评率，百分比数值
+  avgActiveStaff: number; // 平均在岗护工人数
+}
