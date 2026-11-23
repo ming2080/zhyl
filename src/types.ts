@@ -848,3 +848,16 @@ export interface DailyOperationSummary {
   avgSatisfaction: number; // 平均好评率，百分比数值
   avgActiveStaff: number; // 平均在岗护工人数
 }
+
+export interface PointsRuleConfig {
+  ruleType: 'amount' | 'order';
+  spendAmount: number; // 按金额获取：每消费 N 元
+  amountPoints: number; // 按金额获取：获取 N 分
+  orderPoints: number; // 按笔数获取：每消费 1 笔获取 N 分
+  validityType: 'permanent' | 'days';
+  validityDays: number; // 获取后 N 天内有效
+  deductPoints: number; // N 分可抵扣 1 元
+  hasDeductLimit: boolean;
+  maxDeductPoints: number; // 单笔最多抵扣 N 分
+  specifyProduct: boolean; // 仅指定商品可用积分抵扣
+}

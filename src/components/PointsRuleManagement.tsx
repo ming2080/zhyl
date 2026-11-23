@@ -1,26 +1,60 @@
-import React, { useState } from 'react';
-import { Check, CheckCircle2, ShoppingBag } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Check, CheckCircle2, RotateCcw, ShoppingBag } from 'lucide-react';
+import { DEFAULT_POINTS_RULE, describePointsRule } from '../data/pointsRuleData';
 
 interface PointsRuleManagementProps {
   onNotice: (msg: string) => void;
 }
 
 export const PointsRuleManagement: React.FC<PointsRuleManagementProps> = ({ onNotice }) => {
-  // Form state (Matches Screenshot 5: 积分规则)
-  const [ruleType, setRuleType] = useState<'amount' | 'order'>('amount');
-  const [spendAmount, setSpendAmount] = useState('10');
-  const [amountPoints, setAmountPoints] = useState('1');
-  const [orderPoints, setOrderPoints] = useState('5');
+  // Form state（初始值取自积分规则默认配置 src/data/pointsRuleData.ts）
+  const [ruleType, setRuleType] = useState<'amount' | 'order'>(DEFAULT_POINTS_RULE.ruleType);
+  const [spendAmount, setSpendAmount] = useState(String(DEFAULT_POINTS_RULE.spendAmount));
+  const [amountPoints, setAmountPoints] = useState(String(DEFAULT_POINTS_RULE.amountPoints));
+  const [orderPoints, setOrderPoints] = useState(String(DEFAULT_POINTS_RULE.orderPoints));
 
-  const [validityType, setValidityType] = useState<'permanent' | 'days'>('permanent');
-  const [validityDays, setValidityDays] = useState('365');
+  const [validityType, setValidityType] = useState<'permanent' | 'days'>(DEFAULT_POINTS_RULE.validityType);
+  const [validityDays, setValidityDays] = useState(String(DEFAULT_POINTS_RULE.validityDays));
 
-  const [deductPoints, setDeductPoints] = useState('100'); // 100分抵扣1元
-  const [hasDeductLimit, setHasDeductLimit] = useState(false);
-  const [maxDeductPoints, setMaxDeductPoints] = useState('500');
+  const [deductPoints, setDeductPoints] = useState(String(DEFAULT_POINTS_RULE.deductPoints)); // 100分抵扣1元
+  const [hasDeductLimit, setHasDeductLimit] = useState(DEFAULT_POINTS_RULE.hasDeductLimit);
+  const [maxDeductPoints, setMaxDeductPoints] = useState(String(DEFAULT_POINTS_RULE.maxDeductPoints));
 
-  const [specifyProduct, setSpecifyProduct] = useState(false);
+  const [specifyProduct, setSpecifyProduct] = useState(DEFAULT_POINTS_RULE.specifyProduct);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // 规则摘要随表单实时联动
+  const ruleSummary = useMemo(
+    () =>
+      describePointsRule({
+        ruleType,
+        spendAmount: Number(spendAmount) || 0,
+        amountPoints: Number(amountPoints) || 0,
+        orderPoints: Number(orderPoints) || 0,
+        validityType,
+        validityDays: Number(validityDays) || 0,
+        deductPoints: Number(deductPoints) || 0,
+        hasDeductLimit,
+        maxDeductPoints: Number(maxDeductPoints) || 0,
+        specifyProduct,
+      }),
+    [ruleType, spendAmount, amountPoints, orderPoints, validityType, validityDays, deductPoints, hasDeductLimit, maxDeductPoints, specifyProduct],
+  );
+
+  const handleReset = () => {
+    setRuleType(DEFAULT_POINTS_RULE.ruleType);
+    setSpendAmount(String(DEFAULT_POINTS_RULE.spendAmount));
+    setAmountPoints(String(DEFAULT_POINTS_RULE.amountPoints));
+    setOrderPoints(String(DEFAULT_POINTS_RULE.orderPoints));
+    setValidityType(DEFAULT_POINTS_RULE.validityType);
+    setValidityDays(String(DEFAULT_POINTS_RULE.validityDays));
+    setDeductPoints(String(DEFAULT_POINTS_RULE.deductPoints));
+    setHasDeductLimit(DEFAULT_POINTS_RULE.hasDeductLimit);
+    setMaxDeductPoints(String(DEFAULT_POINTS_RULE.maxDeductPoints));
+    setSpecifyProduct(DEFAULT_POINTS_RULE.specifyProduct);
+    setSavedSuccess(false);
+    onNotice('已恢复长者敬老健康积分规则默认值');
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,6 +238,14 @@ export const PointsRuleManagement: React.FC<PointsRuleManagementProps> = ({ onNo
             >
               保存
             </button>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="px-4 py-2 border border-gray-200 text-gray-600 rounded-md hover:bg-gray-50 font-medium transition-colors flex items-center space-x-1.5"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>恢复默认</span>
+            </button>
             {savedSuccess && (
               <span className="flex items-center text-emerald-600 space-x-1 font-medium">
                 <CheckCircle2 className="w-4 h-4" />
@@ -212,6 +254,20 @@ export const PointsRuleManagement: React.FC<PointsRuleManagementProps> = ({ onNo
             )}
           </div>
         </form>
+
+        {/* 规则摘要：随表单实时联动 */}
+        <div className="max-w-3xl bg-emerald-50/60 border border-emerald-100 rounded-lg p-4 space-y-1.5">
+          <div className="flex items-center space-x-2 text-gray-800 font-medium">
+            <ShoppingBag className="w-4 h-4 text-[#10b981]" />
+            <span>规则摘要</span>
+          </div>
+          {ruleSummary.map((line) => (
+            <p key={line} className="flex items-center space-x-2 text-gray-600">
+              <Check className="w-3.5 h-3.5 text-[#10b981] shrink-0" />
+              <span>{line}</span>
+            </p>
+          ))}
+        </div>
       </div>
     </div>
   );
