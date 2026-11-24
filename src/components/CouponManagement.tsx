@@ -15,299 +15,12 @@ import {
   CheckCircle2,
   X,
 } from 'lucide-react';
-
-export interface CouponItem {
-  id: string;
-  name: string;
-  status: '可领用' | '已领完' | '已下架';
-  content: string; // e.g. "¥20 满200元可用"
-  discountAmount: number;
-  minSpend: number;
-  scope: string; // e.g. "全部商品", "适老助浴与清洁专区", "慢病监测设备专区"
-  targetUser: string; // e.g. "全部客户", "新注册长者", "高龄独居长者"
-  claimedCount: number;
-  totalCount: number;
-  publishTime: string; // 2026-09-19 14:20:00 (descending)
-  couponType: '公开券' | '私有券';
-  remarks?: string;
-}
-
-export interface CouponDailyStat {
-  id: string;
-  date: string; // 2026-09-19 down to 2026-09-01
-  availableCount: number;
-  claimedCount: number;
-  claimedUsers: number;
-  usedCount: number;
-  usedUsers: number;
-  discountAmount: number;
-}
-
-const INITIAL_COUPONS: CouponItem[] = [
-  {
-    id: 'cp-01',
-    name: '新客专享适老关怀券',
-    status: '可领用',
-    content: '¥20 满200元可用',
-    discountAmount: 20,
-    minSpend: 200,
-    scope: '全部商品',
-    targetUser: '全部客户',
-    claimedCount: 45,
-    totalCount: 300,
-    publishTime: '2026-09-19 15:30:10',
-    couponType: '公开券',
-    remarks: '针对2026年9月新入驻社区长者专享，助力适老助浴与初次清洁',
-  },
-  {
-    id: 'cp-02',
-    name: '重阳敬老居家助浴立减券',
-    status: '可领用',
-    content: '¥50 满300元可用',
-    discountAmount: 50,
-    minSpend: 300,
-    scope: '指定居家上门服务',
-    targetUser: '全部客户',
-    claimedCount: 88,
-    totalCount: 200,
-    publishTime: '2026-09-19 10:15:22',
-    couponType: '公开券',
-    remarks: '重阳节特别关爱补贴券，仅限上门专业助浴及居室防滑施工抵扣',
-  },
-  {
-    id: 'cp-03',
-    name: '慢病监测智能设备补贴券',
-    status: '可领用',
-    content: '¥100 满500元可用',
-    discountAmount: 100,
-    minSpend: 500,
-    scope: '指定慢病监护设备',
-    targetUser: '高龄独居长者',
-    claimedCount: 62,
-    totalCount: 150,
-    publishTime: '2026-09-18 16:45:00',
-    couponType: '公开券',
-    remarks: '用于高血压心电手环、睡眠体征床垫及紧急拉绳采购补贴',
-  },
-  {
-    id: 'cp-04',
-    name: '金秋助餐营养套餐抵扣券',
-    status: '可领用',
-    content: '¥15 满100元可用',
-    discountAmount: 15,
-    minSpend: 100,
-    scope: '全部商品',
-    targetUser: '全部客户',
-    claimedCount: 120,
-    totalCount: 500,
-    publishTime: '2026-09-18 10:09:09',
-    couponType: '公开券',
-    remarks: '社区长者食堂配餐专用满减优惠',
-  },
-  {
-    id: 'cp-05',
-    name: '高龄失能家庭陪诊护理补贴',
-    status: '可领用',
-    content: '¥60 满350元可用',
-    discountAmount: 60,
-    minSpend: 350,
-    scope: '指定居家上门服务',
-    targetUser: '长护险定点长者',
-    claimedCount: 35,
-    totalCount: 100,
-    publishTime: '2026-09-17 14:20:18',
-    couponType: '私有券',
-    remarks: '定向发放给长护险评估失能等级三级及以上家庭',
-  },
-  {
-    id: 'cp-06',
-    name: '银发学堂文娱活动体验券',
-    status: '可领用',
-    content: '¥30 满150元可用',
-    discountAmount: 30,
-    minSpend: 150,
-    scope: '全部商品',
-    targetUser: '全部客户',
-    claimedCount: 96,
-    totalCount: 200,
-    publishTime: '2026-09-16 11:35:40',
-    couponType: '公开券',
-    remarks: '用于书画茶艺沙龙、心理关怀及防诈骗科普讲座',
-  },
-  {
-    id: 'cp-07',
-    name: '康复理疗上门指导优惠券',
-    status: '可领用',
-    content: '¥80 满400元可用',
-    discountAmount: 80,
-    minSpend: 400,
-    scope: '指定居家上门服务',
-    targetUser: '慢病签约用户',
-    claimedCount: 75,
-    totalCount: 100,
-    publishTime: '2026-09-15 09:20:00',
-    couponType: '公开券',
-    remarks: '专业康复理疗师上门偏瘫肢体运动指导专项满减',
-  },
-  {
-    id: 'cp-08',
-    name: '适老防跌倒改造无门槛体验券',
-    status: '可领用',
-    content: '¥25 无门槛',
-    discountAmount: 25,
-    minSpend: 0,
-    scope: '全部商品',
-    targetUser: '全部客户',
-    claimedCount: 200,
-    totalCount: 200,
-    publishTime: '2026-09-14 16:10:00',
-    couponType: '公开券',
-    remarks: '卫生间安全扶手与感应小夜灯加装无门槛直减',
-  },
-  {
-    id: 'cp-09',
-    name: '家庭医生季度健康体检券',
-    status: '可领用',
-    content: '¥120 满600元可用',
-    discountAmount: 120,
-    minSpend: 600,
-    scope: '全部商品',
-    targetUser: '慢病签约用户',
-    claimedCount: 42,
-    totalCount: 120,
-    publishTime: '2026-09-12 11:00:00',
-    couponType: '公开券',
-    remarks: '包含常规生化全套、颈动脉超声及心电图居家采集',
-  },
-  {
-    id: 'cp-10',
-    name: '中秋敬老月温情大礼包优惠券',
-    status: '可领用',
-    content: '¥40 满250元可用',
-    discountAmount: 40,
-    minSpend: 250,
-    scope: '全部商品',
-    targetUser: '全部客户',
-    claimedCount: 160,
-    totalCount: 300,
-    publishTime: '2026-09-08 14:00:00',
-    couponType: '公开券',
-    remarks: '中秋佳节送长者健康礼包满减',
-  },
-];
-
-const INITIAL_COUPON_STATS: CouponDailyStat[] = [
-  {
-    id: 'stat-01',
-    date: '2026-09-19',
-    availableCount: 2000,
-    claimedCount: 88,
-    claimedUsers: 65,
-    usedCount: 12,
-    usedUsers: 9,
-    discountAmount: 240,
-  },
-  {
-    id: 'stat-02',
-    date: '2026-09-18',
-    availableCount: 2000,
-    claimedCount: 75,
-    claimedUsers: 54,
-    usedCount: 10,
-    usedUsers: 8,
-    discountAmount: 200,
-  },
-  {
-    id: 'stat-03',
-    date: '2026-09-17',
-    availableCount: 2000,
-    claimedCount: 68,
-    claimedUsers: 48,
-    usedCount: 8,
-    usedUsers: 6,
-    discountAmount: 160,
-  },
-  {
-    id: 'stat-04',
-    date: '2026-09-16',
-    availableCount: 2000,
-    claimedCount: 60,
-    claimedUsers: 42,
-    usedCount: 7,
-    usedUsers: 5,
-    discountAmount: 140,
-  },
-  {
-    id: 'stat-05',
-    date: '2026-09-15',
-    availableCount: 2000,
-    claimedCount: 52,
-    claimedUsers: 38,
-    usedCount: 6,
-    usedUsers: 4,
-    discountAmount: 120,
-  },
-  {
-    id: 'stat-06',
-    date: '2026-09-14',
-    availableCount: 2000,
-    claimedCount: 46,
-    claimedUsers: 33,
-    usedCount: 5,
-    usedUsers: 4,
-    discountAmount: 100,
-  },
-  {
-    id: 'stat-07',
-    date: '2026-09-13',
-    availableCount: 2000,
-    claimedCount: 40,
-    claimedUsers: 30,
-    usedCount: 4,
-    usedUsers: 3,
-    discountAmount: 80,
-  },
-  {
-    id: 'stat-08',
-    date: '2026-09-12',
-    availableCount: 2000,
-    claimedCount: 38,
-    claimedUsers: 28,
-    usedCount: 4,
-    usedUsers: 3,
-    discountAmount: 80,
-  },
-  {
-    id: 'stat-09',
-    date: '2026-09-10',
-    availableCount: 2000,
-    claimedCount: 32,
-    claimedUsers: 24,
-    usedCount: 3,
-    usedUsers: 2,
-    discountAmount: 60,
-  },
-  {
-    id: 'stat-10',
-    date: '2026-09-08',
-    availableCount: 2000,
-    claimedCount: 29,
-    claimedUsers: 22,
-    usedCount: 3,
-    usedUsers: 2,
-    discountAmount: 60,
-  },
-  {
-    id: 'stat-11',
-    date: '2026-09-05',
-    availableCount: 2000,
-    claimedCount: 24,
-    claimedUsers: 18,
-    usedCount: 2,
-    usedUsers: 2,
-    discountAmount: 40,
-  },
-];
+import type { CouponItem, CouponDailyStat } from '../types';
+import {
+  INITIAL_COUPONS,
+  INITIAL_COUPON_STATS,
+  COUPON_STATS_TOTALS,
+} from '../data/couponData';
 
 interface CouponManagementProps {
   onNotice: (msg: string) => void;
@@ -525,23 +238,23 @@ export const CouponManagement: React.FC<CouponManagementProps> = ({ onNotice }) 
           <div className="grid grid-cols-5 gap-4">
             <div className="bg-[#f9fafb] border border-gray-100 rounded-xl p-4 text-center">
               <p className="text-gray-500 text-xs">领取总数量</p>
-              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">1028</p>
+              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">{COUPON_STATS_TOTALS.totalClaimed}</p>
             </div>
             <div className="bg-[#f9fafb] border border-gray-100 rounded-xl p-4 text-center">
               <p className="text-gray-500 text-xs">领取人数</p>
-              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">712</p>
+              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">{COUPON_STATS_TOTALS.claimedUsers}</p>
             </div>
             <div className="bg-[#f9fafb] border border-gray-100 rounded-xl p-4 text-center">
               <p className="text-gray-500 text-xs">使用总数量</p>
-              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">55</p>
+              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">{COUPON_STATS_TOTALS.totalUsed}</p>
             </div>
             <div className="bg-[#f9fafb] border border-gray-100 rounded-xl p-4 text-center">
               <p className="text-gray-500 text-xs">使用人数</p>
-              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">123</p>
+              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">{COUPON_STATS_TOTALS.usedUsers}</p>
             </div>
             <div className="bg-[#f9fafb] border border-gray-100 rounded-xl p-4 text-center">
               <p className="text-gray-500 text-xs">优惠金额 (元)</p>
-              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">730</p>
+              <p className="text-2xl font-bold text-gray-800 font-mono mt-1">{COUPON_STATS_TOTALS.totalDiscount}</p>
             </div>
           </div>
 

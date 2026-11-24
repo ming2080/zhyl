@@ -861,3 +861,40 @@ export interface PointsRuleConfig {
   maxDeductPoints: number; // 单笔最多抵扣 N 分
   specifyProduct: boolean; // 仅指定商品可用积分抵扣
 }
+
+// 优惠券管理（营销-优惠券）接口：与优惠券管理页展示一致
+export interface CouponItem {
+  id: string;
+  name: string;
+  status: '可领用' | '已领完' | '已下架';
+  content: string; // e.g. "¥20 满200元可用"
+  discountAmount: number;
+  minSpend: number;
+  scope: string; // e.g. "全部商品", "适老助浴与清洁专区", "慢病监测设备专区"
+  targetUser: string; // e.g. "全部客户", "新注册长者", "高龄独居长者"
+  claimedCount: number;
+  totalCount: number;
+  publishTime: string; // 2026-09-19 14:20:00 (descending)
+  couponType: '公开券' | '私有券';
+  remarks?: string;
+}
+
+export interface CouponDailyStat {
+  id: string;
+  date: string; // 2026-09-19 down to 2026-09-01
+  availableCount: number;
+  claimedCount: number;
+  claimedUsers: number;
+  usedCount: number;
+  usedUsers: number;
+  discountAmount: number;
+}
+
+// 优惠券数据页五项汇总卡片数值（累计口径）
+export interface CouponStatsTotals {
+  totalClaimed: number; // 领取总数量
+  claimedUsers: number; // 领取人数
+  totalUsed: number; // 使用总数量
+  usedUsers: number; // 使用人数
+  totalDiscount: number; // 优惠金额（元）
+}
