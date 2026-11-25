@@ -12,6 +12,13 @@ import {
 } from 'lucide-react';
 import { StaffMember } from '../types';
 import { MOCK_STAFF_LIST } from '../data/extendedData';
+import {
+  STAFF_SERVICE_TYPES,
+  STAFF_STATUS_OPTIONS,
+  STAFF_STATUS_BADGE_STYLES,
+  STAFF_SUMMARY_CARDS,
+  getStaffStatusSummary,
+} from '../data/staffData';
 
 interface StaffManagementProps {
   onNotice: (msg: string) => void;
@@ -26,6 +33,11 @@ export const StaffManagement: React.FC<StaffManagementProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+
+  const staffSummary = useMemo(
+    () => getStaffStatusSummary(staffList),
+    [staffList]
+  );
 
   const filteredStaff = useMemo(() => {
     return staffList
@@ -83,6 +95,26 @@ export const StaffManagement: React.FC<StaffManagementProps> = ({
           </div>
         </div>
 
+        {/* Summary Strip: driven by the staff data layer, updates live when a status is toggled */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-5">
+          {STAFF_SUMMARY_CARDS.map((card) => (
+            <div
+              key={card.key}
+              className="bg-gray-50/80 border border-gray-100 rounded-lg px-3.5 py-3"
+            >
+              <div className="text-[11px] text-gray-500">{card.label}</div>
+              <div className="text-lg font-bold text-gray-800 mt-0.5">
+                {staffSummary[card.key]}
+                {card.suffix && (
+                  <span className="text-xs font-medium text-gray-500 ml-0.5">
+                    {card.suffix}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* Filter Row */}
         <div className="flex flex-wrap items-center gap-4 pt-5 pb-5 text-xs text-gray-600 border-b border-gray-50">
           <div className="flex items-center space-x-2">
@@ -93,10 +125,11 @@ export const StaffManagement: React.FC<StaffManagementProps> = ({
               className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:border-[#10b981]"
             >
               <option value="all">全部类别</option>
-              <option value="家政护理">家政护理</option>
-              <option value="康复理疗">康复理疗</option>
-              <option value="上门体检">上门体检</option>
-              <option value="适老改造">适老改造</option>
+              {STAFF_SERVICE_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -108,9 +141,11 @@ export const StaffManagement: React.FC<StaffManagementProps> = ({
               className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:border-[#10b981]"
             >
               <option value="all">全部状态</option>
-              <option value="服务中">服务中</option>
-              <option value="空闲接单">空闲接单</option>
-              <option value="轮休">轮休</option>
+              {STAFF_STATUS_OPTIONS.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -221,13 +256,7 @@ export const StaffManagement: React.FC<StaffManagementProps> = ({
 
                     <td className="py-3 px-3.5 text-center">
                       <span
-                        className={`inline-block text-[11px] px-2.5 py-0.5 rounded-full border font-medium ${
-                          staff.status === '服务中'
-                            ? 'bg-blue-50 text-blue-700 border-blue-200'
-                            : staff.status === '空闲接单'
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-gray-100 text-gray-600 border-gray-200'
-                        }`}
+                        className={`inline-block text-[11px] px-2.5 py-0.5 rounded-full border font-medium ${STAFF_STATUS_BADGE_STYLES[staff.status]}`}
                       >
                         {staff.status}
                       </span>

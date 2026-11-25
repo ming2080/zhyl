@@ -218,6 +218,16 @@ export interface StaffMember {
   certificate: string;
 }
 
+// Staff status summary interface
+export interface StaffStatusSummary {
+  total: number;
+  serving: number;
+  idle: number;
+  resting: number;
+  totalMonthlyOrders: number;
+  avgSatisfactionRate: string;
+}
+
 // Service order interface
 export interface CareOrder {
   id: string;
