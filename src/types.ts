@@ -908,3 +908,29 @@ export interface CouponStatsTotals {
   usedUsers: number; // 使用人数
   totalDiscount: number; // 优惠金额（元）
 }
+
+export interface LevelItem {
+  id: string;
+  name: string; // e.g. Lv1, Lv2...
+  status: boolean; // true = 启用, false = 停用
+  levelType: string; // 一级, 二级...
+  upgradeType: string; // 注册, 累计消费, 积分达成...
+  benefits: string; // 2倍积分; 9.8折优惠; 健康测评
+  receiver: string; // 张珊, 李明明...
+  sendMethod: string; // 系统消息, 短信通知...
+  updateTime: string; // 2026-09-19 16:30:00, descending
+  upgradeConditions?: {
+    spendAmountEnabled: boolean;
+    spendAmount: string;
+    growthEnabled: boolean;
+    growthValue: string;
+  };
+  benefitSettings?: {
+    discountEnabled: boolean;
+    discountValue: string;
+    pointsMultiplierEnabled: boolean;
+    pointsMultiplierValue: string;
+    healthAssessmentEnabled: boolean;
+  };
+  description?: string;
+}
